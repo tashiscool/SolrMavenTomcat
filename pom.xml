@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- <parent> <groupId>com.newcorp</groupId> <artifactId>TBD</artifactId> 
+		<version>1.0.RELEASE</version> </parent> -->
+
+	<groupId>com.newcorp</groupId>
+	<artifactId>solr-search</artifactId>
+	<version>1.3-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>SOLR War Files</name>
+	<distributionManagement>
+		<repository>
+			<id>ccp</id>
+			<url>
+			http://maven.newcorp.com/nexus/content/repositories/ccp
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>ccp-snapshot</id>
+			<url>
+			http://maven.newcorp.com/nexus/content/repositories/ccp-snapshot
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>nuxeo</id>
+			<url>https://maven-us.nuxeo.org/nexus/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>codelds</id>
+			<url>https://code.lds.org/nexus/content/groups/main-repo</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<slf4jVersion>1.7.5</slf4jVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<solr.version>4.7.2</solr.version>
+		<org.springframework-version>3.2.4.RELEASE</org.springframework-version>
+		<oracle.driver.version>11.2.0.3</oracle.driver.version>
+        <tomcat.version>7.0.53</tomcat.version>
+    </properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.newcorp</groupId>
+				<artifactId>common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- SLF4J -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4jVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <!-- Solr 4.3.0 -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr</artifactId>
+            <version>${solr.version}</version>
+            <type>war</type>
+        </dependency>
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-dataimporthandler</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-dataimporthandler-extras</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-solrj</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${org.springframework-version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-orm</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${org.springframework-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+			</dependency>
+			<dependency>
+				<groupId>easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>ojdbc6</artifactId>
+				<version>${oracle.driver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.oracle</groupId>
+				<artifactId>orai18n</artifactId>
+				<version>${oracle.driver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr</artifactId>
+			<type>war</type>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-dataimporthandler</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-dataimporthandler-extras</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+
+		<pluginManagement>
+
+			<plugins>
+				<!-- The Master solr node needs to have a copy of the slave config for 
+					propogation to slaves should the config be in any way changed (manual intervention). 
+					To do this we use some file renaming hackery to rename all slave/**/solrconfig.xml 
+					files to solrconfig_slave.xml for the master node generation. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<showDeprecation>true</showDeprecation>
+						<showWarnings>true</showWarnings>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.github.goldin</groupId>
+					<artifactId>copy-maven-plugin</artifactId>
+					<version>0.2.5</version>
+					<executions>
+						<execution>
+							<id>copy-and-rename-solr-slave-config</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>copy</goal>
+							</goals>
+							<configuration>
+								<verbose>true</verbose>
+								<resources>
+									<resource>
+										<directory>${basedir}/src/main/solrconfig/slave</directory>
+										<targetPath>${project.build.directory}/${project.build.finalName}</targetPath>
+										<includes>
+											<include>**/solrconfig.xml</include>
+										</includes>
+										<preservePath>true</preservePath>
+										<destFileName>solrconfig_slave.xml</destFileName>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+
+						<execution>
+							<id>copy-and-rename-additional-configs</id>
+							<phase>generate-resources</phase>
+							<goals>
+								<goal>copy</goal>
+							</goals>
+							<configuration>
+								<resource>
+									<targetPath>${project.basedir}/src/main/resources</targetPath>
+									<directory>${project.basedir}/../profiles/${build.profile.id}</directory>
+									<includes>
+										<include>*.properties</include>
+									</includes>
+								</resource>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>add-integration-test-sources</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>add-test-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>${basedir}/src/it/java</source>
+								</sources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>properties-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<phase>initialize</phase>
+							<goals>
+								<goal>read-project-properties</goal>
+							</goals>
+							<configuration>
+								<quiet>false</quiet>
+								<files>
+									<!-- test-classes directory to keep the property files out of the 
+										build artifact -->
+									<file>${project.build.directory}/test-classes/config.properties</file>
+								</files>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<configuration>
+						<testSourceDirectory>${basedir}/src/it/java</testSourceDirectory>
+						<failIfNoTests>false</failIfNoTests>
+						<argLine>-Xmx512m -XX:MaxPermSize=512m</argLine>
+						<systemPropertyVariables>
+							<!-- force log4j to use props in test classpath -->
+							<log4j.configuration>${file.uri.prefix}${project.build.directory}/test-classes/log4j.properties</log4j.configuration>
+						</systemPropertyVariables>
+						<includes>
+							<include>**/IT*.java</include>
+							<include>**/*IT.java</include>
+							<include>**/*ITCase.java</include>
+							<include>**/*IntegrationTest.java</include>
+							<include>**/*IntegrationTests.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/helpers/**/*</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<configuration>
+						<argLine>-Xmx512m -XX:MaxPermSize=512m</argLine>
+						<systemPropertyVariables>
+							<!-- force log4j to use props in test classpath -->
+							<log4j.configuration>${file.uri.prefix}${project.build.directory}/test-classes/log4j.properties</log4j.configuration>
+						</systemPropertyVariables>
+
+						<!-- opposite of default includes for failsafe plugin with some extras -->
+						<excludes>
+							<exclude>**/IT*.java</exclude>
+							<exclude>**/*IT.java</exclude>
+							<exclude>**/*ITCase.java</exclude>
+							<exclude>**/*IntegrationTest.java</exclude>
+							<exclude>**/*IntegrationTests.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+        <profile>
+            <id>tomcat</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.tomcat.maven</groupId>
+                        <artifactId>tomcat7-maven-plugin</artifactId>
+                        <version>2.1</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>assembly</id>
+        </profile>
+    </profiles>
+
+
+    <scm>
+        <developerConnection>scm:svn:http://subversion.newcorp.com/svn/projects/NEW/WMS/sandbox/MAVEN/solr-search/trunk</developerConnection>
+    </scm>
+
+	<modules>
+		<module>common</module>
+		<module>search</module>
+	</modules>
+</project>

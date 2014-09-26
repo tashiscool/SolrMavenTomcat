@@ -1,0 +1,45 @@
+<dataConfig>
+    <document>
+        <entity name="product" dataSource="db" pk="product_id"
+            query="SELECT sa.service_item_id plan_id, sa.inv_item_id product_id, sa.service_item_name item_name, catalog.* 
+FROM mtl_system_items_b inv, 
+apps.xxnew_svc_avail_v sa, 
+xx_new.xx_catalog_inventory catalog 
+WHERE sa.inv_item_id = catalog.inventory_item_id 
+AND sa.service_item_id = inv.inventory_item_id 
+AND inv.item_type = 'NEW CLIENT PARTS WARRANTY'
+AND catalog.portal_id in ('15','22', '161', '165', '155', '171')
+AND inv.organization_id = 81 AND inv.attribute1 in ('186523556','214455275','214455304','214455309','214706245',
+    '214706342','214706360','214706448','215743976','215744088','215744240','217109975','6018553','8631256',
+    '93523888','99553559','204900224', '73986370', '32933607', '214706125') "
+
+            deltaQuery="SELECT sa.service_item_id plan_id, sa.inv_item_id product_id, sa.service_item_name item_name, catalog.*
+                FROM mtl_system_items_b inv,
+                    apps.xxnew_svc_avail_v sa,
+                    xx_new.xx_catalog_inventory catalog
+                WHERE sa.inv_item_id = catalog.inventory_item_id
+                    AND sa.service_item_id = inv.inventory_item_id
+                    AND inv.item_type = 'NEW CLIENT PARTS WARRANTY'
+                    AND catalog.portal_id in ('15','22', '161', '165', '155', '171')
+AND inv.organization_id = 81 AND inv.attribute1 in ('186523556','214455275','214455304','214455309','214706245',
+    '214706342','214706360','214706448','215743976','215744088','215744240','217109975','6018553','8631256',
+    '93523888','99553559','204900224', '73986370', '32933607', '214706125') AND ( inv.LAST_UPDATE_DATE > '${dataimporter.last_index_time}') "   >
+            
+            <field column="plan_id" name="plan_id" />
+            <field column="power_source" name="power_source" />
+            <field column="product_id" name="product_id" />
+            <field column="item_name" name="item_name" />
+            <field column="friendly_desc" name="friendly_desc" />
+            <field column="categories" name="categories" />
+            <field column="cat_segment3" name="cat_segment3" />
+            <field column="segment4" name="brand" />
+            <field column="default_power_source" name="default_power_source" />
+            <field column="prod_size" name="prod_size" />
+            <field column="portal_id" name="portal_id" />
+            <field column="client_id" name="client_id" />
+            <field column="image_link" name="image_link" />
+            <field column="category_id" name="category_id" />
+            
+        </entity>
+    </document>
+</dataConfig>

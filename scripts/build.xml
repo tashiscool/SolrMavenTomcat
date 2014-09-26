@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tomcat deployer" default="redeploy" basedir=".">
+    <path id="lib.path">
+        <fileset dir="${basedir}/lib">
+            <include name="*.jar" />
+        </fileset>
+    </path>
+    
+    <!-- Configure the custom Ant tasks for the Manager application -->
+    <taskdef name="deploy"   classname="org.apache.catalina.ant.DeployTask"   classpathref="lib.path" />
+    <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask" classpathref="lib.path" />
+    
+    <!-- need trycatch -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="lib.path" />
+    
+    <taskdef name="for" classname="net.sf.antcontrib.logic.ForTask" classpathref="lib.path" />
+    
+    <property name="work_dir" value="${basedir}/work" />
+    
+    <!-- =================================================================== -->
+    <target name="init">
+        <fail message="no environment specified; use -DtargetEnv=&lt;whatever&gt;"
+              unless="targetEnv"
+        />
+        
+        <!-- recreate clean work directory -->
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${work_dir}" includes="**/*"/>
+        </delete>
+        
+        <mkdir dir="${work_dir}" />
+    </target>
+
+    <target name="-load-props">
+        <fail message="invalid environment '${targetEnv}'">
+            <condition>
+                <not>
+                    <available file="env/${targetEnv}.properties" />
+                </not>
+            </condition>
+        </fail>
+        
+        <!--
+            sets the following properties:
+                hostname (deploy, undeploy, check-service)
+                check.environment (check-service)
+                username (deploy, undeploy)
+                password (deploy, undeploy)
+        -->
+        <property file="env/${targetEnv}.properties" prefix="antDeploy."/>
+
+        <!--
+            This changed for Tomcat 7; needs to be manager/text.
+            Specify in ${targetEnv}.properties to override this default.
+        -->
+        <property name="antDeploy.manager-context" value="manager" />
+
+        <echo><![CDATA[configured properties:
+
+    targetEnv: ${targetEnv}
+    manager-context: ${antDeploy.manager-context}
+    hostname: ${antDeploy.hostname}
+    username: ${antDeploy.username}
+    password: ${antDeploy.password}
+    check.environment: ${antDeploy.check.environment}
+]]> </echo>
+    </target>
+
+    <target name="war_setup" depends="init">
+        <!-- figure out which war we're deploying -->
+        <pathconvert property="war_path" setonempty="false">
+            <fileset dir="${basedir}">
+                <include name="*.war" />
+            </fileset>
+        </pathconvert>
+        
+        <fail message="no WARs matching *.war"
+              unless="war_path"
+        />
+        
+        <!-- this will fail if multiple files match the pattern -->
+        <fail message="${war_path} does not exist">
+            <condition>
+                <not>
+                    <available file="${war_path}" />
+                </not>
+            </condition>
+        </fail>
+        
+        <echo message="WAR is ${war_path}" />
+        
+        <loadproperties prefix="manifest_mf">
+            <zipentry zipfile="${war_path}" name="META-INF/MANIFEST.MF" />
+        </loadproperties>
+
+        <echo message="maven g:a:build-id: ${manifest_mf.mvn-groupId}:${manifest_mf.mvn-artifactId}:${manifest_mf.CI-BuildNumber}" />
+        
+        <propertyregex property="targetContext"
+                       input="${war_path}"
+                       regexp="^.*[/\\]([A-Za-z0-9-]+)(-([0-9]+\.?)+((-[A-Za-z0-9]+)?-SNAPSHOT)?)?\.war$"
+                       select="\1" />
+        
+        <fail message="invalid WAR filename" unless="targetContext" />
+
+        <echo message="target context is ${targetContext}" />
+        
+        <!-- Configure the context path for this application -->
+        <property name="path" value="/${targetContext}"/>
+    </target>
+    
+    <!-- Executable Targets -->
+    <target name="undeploy"
+            depends="war_setup,-load-props"
+            description="undeploys an application">
+
+        <trycatch>
+            <try>
+                <echo message="undeploying ${path}" />
+        
+                <!-- deploy the war -->
+                <undeploy url="http://${antDeploy.hostname}/${antDeploy.manager-context}"
+                          username="${antDeploy.username}"
+                          password="${antDeploy.password}"
+                          path="${path}"
+                />
+            </try>
+            <catch>
+                <echo message="undeploy failed" />
+            </catch>
+        </trycatch>
+    </target>
+    
+    <target name="deploy"
+            depends="war_setup,-load-props"
+            description="deploys a war">
+
+        <echo message="deploying ${war_path} to ${path} on ${antDeploy.hostname}" />
+        
+        <!-- deploy the war -->
+        <deploy url="http://${antDeploy.hostname}/${antDeploy.manager-context}"
+                username="${antDeploy.username}"
+                password="${antDeploy.password}"
+                path="${path}"
+                war="file:${war_path}"
+        />
+    </target>
+    
+    <target name="redeploy" depends="undeploy,deploy" />
+    
+ 
+</project>

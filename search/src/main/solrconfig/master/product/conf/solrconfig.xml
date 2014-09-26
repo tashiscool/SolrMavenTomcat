@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- This is a stripped down config file used for a simple example... It is *not* a good example to work from. -->
+<config>
+
+	<!-- take advantage of improvements in lucene by calling out the latest version here -->
+	<luceneMatchVersion>LUCENE_36</luceneMatchVersion>
+
+	<!-- added to handle commits more gracefully for frequent writes -->
+	<updateHandler class="solr.DirectUpdateHandler2">
+		<autoCommit> <!-- we want to auto-commit, not commit each and every request -->
+			<maxDocs>300</maxDocs>  <!-- commit every 300 documents... -->
+			<maxTime>60000</maxTime> <!-- ...or 1 min, whichever comes first -->
+		</autoCommit>
+		<updateLog>
+			<str name="dir">${solr.data.dir:/opt/app}</str>
+		</updateLog>		
+	</updateHandler>
+
+	<!-- added to make the write lock handling a bit more robust -->
+	<indexConfig>
+		<lockType>simple</lockType>
+		<unlockOnStartup>true</unlockOnStartup>
+		<writeLockTimeout>20000</writeLockTimeout>
+	</indexConfig>
+
+	<!-- added to make fast commits more resilient; we are not planning to search 
+		on the master, but since a searcher is warmed right after a commit, we want 
+		to ensure that we don't overrun the maximum -->
+	<query>
+		<!-- Max Warming Searchers Maximum number of searchers that may be warming 
+			in the background concurrently. An error is returned if this limit is exceeded. 
+			Recommend values of 1-2 for read-only slaves, higher for masters w/o cache 
+			warming. -->
+		<maxWarmingSearchers>4</maxWarmingSearchers> <!-- master only; slave, 2 -->
+	</query>
+
+	<requestDispatcher handleSelect="true">
+		<requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
+	</requestDispatcher>
+
+	<requestHandler name="standard" class="solr.StandardRequestHandler" default="true" />
+	<requestHandler name="/update" class="solr.XmlUpdateRequestHandler" />
+	<requestHandler name="/admin/" class="solr.admin.AdminHandlers" /><admin><defaultQuery>*:*</defaultQuery></admin>
+	<!-- ping/healthcheck -->
+	<requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+		<lst name="defaults">
+			<str name="qt">standard</str>
+			<str name="q">solrpingquery</str>
+			<str name="echoParams">all</str>
+		</lst>
+	</requestHandler>	
+	<requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+		<lst name="defaults">
+			<str name="config">data-config.xml</str>
+			<lst name="datasource">
+				<str name="name">db</str>
+				<str name="driver">${hibernate.connection.driver_class:}</str>
+				<str name="url">${hibernate.connection.url:}</str>
+				<str name="user">${solr.hibernate.connection.username:}</str>
+				<str name="password">${solr.hibernate.connection.password:}</str>
+				<str name="autoCommit">true</str>
+			</lst>
+		</lst>
+		<lst name="invariants">
+			<str name="rproduct.hibernate.default.schema">${product.hibernate.default.schema:product_dev}</str>
+		</lst>
+	</requestHandler>
+	<!-- this is the request handler for master replication setup -->
+	<requestHandler name="/replication" startup="lazy" class="solr.ReplicationHandler">
+		<lst name="master">
+			<!--Replicate on 'startup' and 'commit'. 'optimize' is also a valid value 
+				for replicateAfter. -->
+			<str name="replicateAfter">startup</str>
+			<str name="replicateAfter">commit</str>
+            <str name="replicateAfter">optimize</str>
+
+			<!--Create a backup after 'optimize'. Other values can be 'commit', 'startup'. 
+				It is possible to have multiple entries of this config string. Note that 
+				this is just for backup, replication does not require this. -->
+			<!-- <str name="backupAfter">optimize</str> -->
+
+			<!--If configuration files need to be replicated give the names here, 
+				separated by comma -->
+			<str name="confFiles">solrconfig_slave.xml:solrconfig.xml</str>
+			<!--The default value of reservation is 10 secs.See the documentation 
+				below . Normally , you should not need to specify this -->
+			<str name="commitReserveDuration">00:00:10</str>
+		</lst>
+		<!-- keep only 1 backup. Using this parameter precludes using the "numberToKeep" 
+			request parameter. (Solr3.6 / Solr4.0) -->
+		<!-- (For this to work in conjunction with "backupAfter" with Solr 3.6.0, 
+			see bug fix https://issues.apache.org/jira/browse/SOLR-3361 ) -->
+		<str name="maxNumberOfBackups">1</str>
+	</requestHandler>
+
+</config>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+    <role rolename="manager" />
+
+    <!--
+        well, this seems kind of sketchy from a security standpoint, but system
+        properties will be expanded in this file, which makes automating
+        deployments nice and easy!
+
+        ${tomcat.username} and ${tomcat.password} should NOT be filtered by
+        Maven.  They should be set via system properties, coordinated through
+        setenv.sh.
+
+        Note that for Tomcat 7 onwards, the roles required to use the manager
+        application were changed from the single manager role to the following
+        four roles. You will need to assign the role(s) required for the
+        functionality you wish to access.
+            manager-gui - allows access to the HTML GUI and the status pages
+            manager-script - allows access to the text interface and the status pages
+            manager-jmx - allows access to the JMX proxy and the status pages
+            manager-status - allows access to the status pages only
+
+        Additionally, for enhanced security, they say you should not apply the
+        manager-gui and manager-text roles to the same user, or the new CSRF
+        security will be defeated.
+    -->
+    <user username="${tomcat.username}" password="${tomcat.password}" roles="manager-gui" />
+    <user username="${tomcat.username}-deployer" password="${tomcat.password}" roles="manager-script" />
+    <user username="solradmin" password="password1" roles="solradmin" />
+    <user username="solrupdate" password="password1" roles="solrupdate" />
+    <user username="solrselect" password="password1" roles="solrselect" />
+</tomcat-users>
