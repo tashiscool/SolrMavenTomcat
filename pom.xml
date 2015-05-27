@@ -369,11 +369,6 @@
         </profile>
     </profiles>
 
-
-    <scm>
-        <developerConnection>scm:svn:http://subversion.newcorp.com/svn/projects/NEW/WMS/sandbox/MAVEN/solr-search/trunk</developerConnection>
-    </scm>
-
 	<modules>
 		<module>common</module>
 		<module>search</module>
